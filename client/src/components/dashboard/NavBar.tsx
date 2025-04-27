@@ -31,7 +31,7 @@ export function Navbar() {
       <div className="px-10">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <span className="text-xl font-bold tracking-tighter text-black">notori.ai</span>
+            <span className="text-xl font-bold tracking-tighter text-black cursor-pointer" onClick={() => router.push('/')}>notori.ai</span>
           </div>
           <div className="flex items-center space-x-2 cursor-pointer" onClick={handleLogout}>
             <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 shadow-sm">

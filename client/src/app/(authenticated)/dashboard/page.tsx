@@ -4,7 +4,7 @@ import DocsDisplay from '@/components/dashboard/DocsDisplay'
 
 const Dashboard = () => {
   return (
-    <div className='flex flex-col h-full w-full'>
+    <div className='flex flex-col h-screen w-screen'>
       <Navbar />
       <div className='flex-1'>
         <DocsDisplay />

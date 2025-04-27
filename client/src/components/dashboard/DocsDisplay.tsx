@@ -10,7 +10,7 @@ const DocsDisplay = () => {
       <DocCard />
       <DocCard />
       <DocCard />
-      
+
     </div>
   )
 }
