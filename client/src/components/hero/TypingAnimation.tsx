@@ -14,9 +14,9 @@ interface TypingAnimationProps {
 
 export function TypingAnimation({
   phrases,
-  typingSpeed = 100,
-  deletingSpeed = 100,
-  blinkDuration = 600,
+  typingSpeed = 75,
+  deletingSpeed = 75,
+  blinkDuration = 500,
 }: TypingAnimationProps) {
   const [currentText, setCurrentText] = useState("")
   const [isDeleting, setIsDeleting] = useState(false)
@@ -81,7 +81,7 @@ export function TypingAnimation({
         blinkCountRef.current += 1;
         setCursorVisibleDuringWait((prev) => !prev);
 
-        if (blinkCountRef.current < 6) { 
+        if (blinkCountRef.current < 4) { 
              blinkTimeoutRef.current = setTimeout(performBlinkStep, blinkDuration);
         } else {
              blinkCountRef.current = 0; 
@@ -106,10 +106,10 @@ export function TypingAnimation({
   const showCursor = !isWaitingBeforeDelete || cursorVisibleDuringWait;
 
   return (
-    <div className={`inline-flex items-center h-6 ${inter.className} text-xl`}> 
+    <div className={`inline-flex items-center h-6 ${inter.className} text-xl font-light`}> 
       <span>{currentText}</span>
       <span
-        className={`w-0.5 h-6 bg-black ml-0.5 ${showCursor ? "opacity-100" : "opacity-0"} ${isWaitingBeforeDelete ? 'transition-opacity' : ''} duration-100`}
+        className={`w-0.5 h-5 bg-black ml-0.5 ${showCursor ? "opacity-100" : "opacity-0"} ${isWaitingBeforeDelete ? 'transition-opacity' : ''} duration-100`}
       ></span>
     </div>
   )

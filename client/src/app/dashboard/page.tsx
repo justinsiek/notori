@@ -1,9 +1,13 @@
 import React from 'react'
+import { Navbar } from '@/components/dashboard/NavBar'
 
 const Dashboard = () => {
   return (
-    <div className='flex flex-col justify-center items-center h-screen w-screen'>
-      <h1>Dashboard</h1>
+    <div className='flex flex-col h-screen w-screen'>
+      <Navbar />
+      <div className='flex flex-col h-screen w-screen bg-gray-100'>
+        hello
+      </div>
     </div>
   )
 }
