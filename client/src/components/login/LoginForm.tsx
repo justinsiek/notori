@@ -1,17 +1,93 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const LoginForm = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const handleLogin = async () => {
+    setError(null)
+    setIsLoading(true)
+
+    if (!email || !password) {
+      setError('Please enter both email and password.')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        console.error('Login failed:', response.status, data)
+        setError(data.message || `Login failed (Status: ${response.status})`)
+      } else {
+        if (data.token) {
+          console.log('Login successful, token received:', data.token)
+          localStorage.setItem('jwtToken', data.token)
+          router.push('/dashboard')
+        } else {
+          console.error('Token missing in successful login response')
+          setError('Login succeeded but no token was received.')
+        }
+      }
+    } catch (err) {
+      console.error('Network or other error during login:', err)
+      setError('An error occurred connecting to the server. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <div className='flex flex-col justify-center items-center h-screen w-screen gap-2'>
-      <input className='border-2 border-gray-500 px-2' type="text" placeholder='Email' 
-        value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input className='border-2 border-gray-500 px-2' type="password" placeholder='Password' 
-        value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button className='bg-black text-white px-4 py-1 cursor-pointer'>Login</button>
+    <div className='flex flex-col justify-center items-center h-screen w-screen'>
+      <div className="w-full max-w-md bg-white p-8 border-2 border-gray-500">
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+        <input
+          className='border-2 border-gray-500 px-3 py-2 w-full mb-3'
+          type="email"
+          placeholder='Email Address'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
+        />
+        <input
+          className='border-2 border-gray-500 px-3 py-2 w-full mb-4'
+          type="password"
+          placeholder='Password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
+        />
+        <button
+          className={`w-full text-white px-4 py-2 cursor-pointer ${isLoading ? 'bg-gra-800 cursor-not-allowed' : 'bg-black hover:bg-gray-800'}`}
+          onClick={handleLogin}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Logging In...' : 'Login'}
+        </button>
+
+        {error && <p className='text-red-600 mt-4 text-sm text-center'>{error}</p>}
+
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Don't have an account?{' '}
+          <a href="/signup" className="text-black hover:underline">
+            Sign Up
+          </a>
+        </p>
+      </div>
     </div>
   )
 }
