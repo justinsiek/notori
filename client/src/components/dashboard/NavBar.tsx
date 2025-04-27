@@ -6,10 +6,24 @@ import { useRouter } from 'next/navigation';
 export function Navbar() {
   const router = useRouter();
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-    localStorage.removeItem('jwtToken');
-    router.push('/login');
+  const handleLogout = async () => {
+    console.log("Attempting to log out...");
+    try {
+      const response = await fetch('http://localhost:8080/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        console.log("Logout successful on server.");
+        router.push('/login');
+      } else {
+        const data = await response.json().catch(() => ({}));
+        console.error("Logout failed on server:", response.status, data.message || '');
+      }
+    } catch (error) {
+      console.error("Error during logout request:", error);
+    }
   };
 
   return (

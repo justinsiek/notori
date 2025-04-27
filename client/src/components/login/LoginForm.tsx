@@ -28,20 +28,13 @@ const LoginForm = () => {
         body: JSON.stringify({ email, password }),
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
         console.error('Login failed:', response.status, data)
         setError(data.message || `Login failed (Status: ${response.status})`)
       } else {
-        if (data.token) {
-          console.log('Login successful, token received:', data.token)
-          localStorage.setItem('jwtToken', data.token)
-          router.push('/dashboard')
-        } else {
-          console.error('Token missing in successful login response')
-          setError('Login succeeded but no token was received.')
-        }
+        console.log('Login successful')
+        router.push('/dashboard')
       }
     } catch (err) {
       console.error('Network or other error during login:', err)

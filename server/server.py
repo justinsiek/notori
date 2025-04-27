@@ -2,7 +2,7 @@ import os
 import datetime
 import jwt
 import bcrypt
-from flask import Flask, jsonify, request, g
+from flask import Flask, jsonify, request, g, make_response
 from flask_cors import CORS
 from supabase import create_client, Client
 from dotenv import load_dotenv
@@ -11,7 +11,13 @@ from functools import wraps
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
+# Configure CORS properly
+CORS(
+    app,
+    origins=["http://localhost:3000"], # Allow your frontend origin
+    supports_credentials=True # Allow cookies and credentials
+)
 
 supabase_url: str = os.getenv('SUPABASE_URL')
 supabase_key: str = os.getenv('SUPABASE_KEY')
@@ -135,16 +141,29 @@ def login():
 
         if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
             user_id = user_data['id']
-            token = create_jwt(user_id) 
-            print(f"Login successful for {email}. Token generated.")
-            return jsonify({'token': token})
+            token = create_jwt(user_id)
+            print(f"Login successful for {email}. Setting HttpOnly cookie.")
+    
+            resp = make_response(jsonify({'message': 'Login successful'}))
+
+            resp.set_cookie(
+                'jwtToken',
+                token,
+                httponly=True, 
+                samesite='Lax',
+                secure=False,
+                path='/',
+                # max_age=datetime.timedelta(days=7) # Optional: can set expiry here too
+            )
+            return resp
         else:
             print(f"Login failed: Incorrect password for {email}.")
-            return jsonify({'message': 'Invalid credentials'}), 401
+            return make_response(jsonify({'message': 'Invalid credentials'}), 401)
 
     except Exception as e:
         print(f"Exception during login for {email}: {e}")
-        return jsonify({'message': 'An error occurred during login'}), 500
+        # Use make_response here too for consistency
+        return make_response(jsonify({'message': 'An error occurred during login'}), 500)
 
 @app.route('/api/get_user_data', methods=['GET'])
 @token_required
@@ -163,6 +182,22 @@ def get_user_data():
     except Exception as e:
         print(f"Error fetching profile for user {user_id}: {e}")
         return jsonify({'message': 'Error fetching profile data'}), 500
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    """Clears the JWT token cookie to log the user out."""
+    print("Logout request received.")
+    resp = make_response(jsonify({'message': 'Logout successful'}))
+    resp.set_cookie(
+        'jwtToken',
+        '',
+        httponly=True,
+        samesite='Lax', 
+        secure=False, 
+        path='/',
+        expires=0 # Set expiration to epoch (the past)
+    )
+    return resp
 
 if __name__ == '__main__':
     print("Starting server...")
