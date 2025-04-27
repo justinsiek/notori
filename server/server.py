@@ -48,22 +48,17 @@ def register():
 
     if not email or not password:
         return jsonify({'message': 'Email and password are required'}), 400
-    
     try:
-        # Hash the password securely
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        print(f"Registering user: {email}") # Temporary print
+        print(f"Registering user: {email}")
 
-        # Insert user into Supabase 'users' table
         response = supabase.table('users').insert({
             'email': email,
-            'password_hash': hashed_password.decode('utf-8') # Store hash as string
+            'password_hash': hashed_password.decode('utf-8')
         }).execute()
 
-        # Check Supabase response
         if hasattr(response, 'error') and response.error:
             print(f"Supabase registration error: {response.error}")
-            # Basic check for duplicate email (Supabase might return a specific error code)
             if 'duplicate key value violates unique constraint' in str(response.error):
                  return jsonify({'message': 'Email already exists'}), 409
             return jsonify({'message': 'Registration failed due to database error'}), 500
@@ -72,13 +67,46 @@ def register():
             print(f"User {email} registered successfully. DB response: {response.data}")
             return jsonify({'message': 'User registered successfully'}), 201
         else:
-            # This case might indicate other issues
             print(f"Registration attempt for {email} resulted in no data and no error.")
             return jsonify({'message': 'Registration failed.'}), 400
 
     except Exception as e:
         print(f"Exception during registration for {email}: {e}")
         return jsonify({'message': 'An internal error occurred during registration'}), 500
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({'message': 'Email and password required'}), 400
+
+    try:
+        print(f"Login attempt for: {email}")
+
+        response = supabase.table('users').select("id, password_hash").eq('email', email).limit(1).execute()
+
+        if not response.data:
+            print(f"Login failed: User {email} not found.")
+            return jsonify({'message': 'Invalid credentials'}), 401
+
+        user_data = response.data[0]
+        stored_hash = user_data['password_hash'].encode('utf-8')
+
+        if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
+            user_id = user_data['id']
+            token = create_jwt(user_id) 
+            print(f"Login successful for {email}. Token generated.")
+            return jsonify({'token': token})
+        else:
+            print(f"Login failed: Incorrect password for {email}.")
+            return jsonify({'message': 'Invalid credentials'}), 401
+
+    except Exception as e:
+        print(f"Exception during login for {email}: {e}")
+        return jsonify({'message': 'An error occurred during login'}), 500
 
 if __name__ == '__main__':
     print("Starting server...")
