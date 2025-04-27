@@ -20,26 +20,33 @@ const LoginForm = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/login', {
+      console.log("Attempting fetch to /api/login")
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       })
+      console.log("Fetch response status:", response.status)
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
-        console.error('Login failed:', response.status, data)
+        console.error('Login failed response:', response.status, data)
         setError(data.message || `Login failed (Status: ${response.status})`)
       } else {
-        console.log('Login successful')
+        console.log('Login successful, cookie should be set.')
+        console.log('Attempting client-side redirect to /dashboard...')
+
         router.push('/dashboard')
+
+        console.log('router.push called successfully.')
       }
     } catch (err) {
-      console.error('Network or other error during login:', err)
+      console.error('Network or other error during login fetch:', err)
       setError('An error occurred connecting to the server. Please try again.')
     } finally {
+      console.log("Login handler finished.")
       setIsLoading(false)
     }
   }

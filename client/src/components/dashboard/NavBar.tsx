@@ -7,15 +7,15 @@ export function Navbar() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    console.log("Attempting to log out...");
+    console.log("Attempting to log out via /api/logout...");
     try {
-      const response = await fetch('http://localhost:8080/api/logout', {
+      const response = await fetch('/api/logout', {
         method: 'POST',
         credentials: 'include',
       });
 
       if (response.ok) {
-        console.log("Logout successful on server.");
+        console.log("Logout successful on server via proxy.");
         router.push('/login');
       } else {
         const data = await response.json().catch(() => ({}));

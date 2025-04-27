@@ -15,8 +15,8 @@ app = Flask(__name__)
 # Configure CORS properly
 CORS(
     app,
-    origins=["http://localhost:3000"], # Allow your frontend origin
-    supports_credentials=True # Allow cookies and credentials
+    origins=["http://localhost:3000"],
+    supports_credentials=True
 )
 
 supabase_url: str = os.getenv('SUPABASE_URL')
@@ -149,12 +149,14 @@ def login():
             resp.set_cookie(
                 'jwtToken',
                 token,
-                httponly=True, 
+                httponly=True,
                 samesite='Lax',
                 secure=False,
                 path='/',
-                # max_age=datetime.timedelta(days=7) # Optional: can set expiry here too
             )
+
+            print("DEBUG: Response headers before sending:", resp.headers)
+
             return resp
         else:
             print(f"Login failed: Incorrect password for {email}.")
