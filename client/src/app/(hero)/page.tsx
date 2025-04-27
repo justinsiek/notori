@@ -1,13 +1,14 @@
-import Link from 'next/link'
 import React from 'react'
 import { Navbar } from '@/components/hero/NavBar'
 import { TypingAnimation } from '@/components/hero/TypingAnimation'
-
+import { HeroText } from '@/components/hero/HeroText'
 const Hero = () => {
   return (
     <>
       <Navbar />
-      <div className='flex justify-center items-center h-[3000px] w-screen gap-2'>
+      <div className='flex flex-col h-full w-screen'>
+        <div className='flex flex-col justify-center items-center h-screen w-screen gap-2'>
+        <HeroText />
         <TypingAnimation phrases={[
                     "AI-powered writing assistant.",
                     "Distraction-free environment.",
@@ -15,6 +16,12 @@ const Hero = () => {
                     "Smart suggestions as you type.",
                     "Version history and document tracking.",
                   ]} />
+        </div>
+        <div className='flex flex-col justify-center items-center h-screen w-screen gap-2'>
+          <div className='flex flex-col justify-center items-center h-screen w-screen gap-2'>
+            <h1>Features</h1>
+          </div>
+        </div>
       </div>
     </>
   )

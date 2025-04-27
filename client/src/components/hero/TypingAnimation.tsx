@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { Inter } from "next/font/google"
+
+const inter = Inter({ subsets: ["latin"] })
 
 interface TypingAnimationProps {
   phrases: string[]
@@ -103,10 +106,10 @@ export function TypingAnimation({
   const showCursor = !isWaitingBeforeDelete || cursorVisibleDuringWait;
 
   return (
-    <div className="inline-flex items-center h-6"> 
+    <div className={`inline-flex items-center h-6 ${inter.className} text-xl`}> 
       <span>{currentText}</span>
       <span
-        className={`w-0.5 h-4 bg-black dark:bg-white ml-0.5 ${showCursor ? "opacity-100" : "opacity-0"} ${isWaitingBeforeDelete ? 'transition-opacity' : ''} duration-100`}
+        className={`w-0.5 h-6 bg-black ml-0.5 ${showCursor ? "opacity-100" : "opacity-0"} ${isWaitingBeforeDelete ? 'transition-opacity' : ''} duration-100`}
       ></span>
     </div>
   )
