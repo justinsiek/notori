@@ -41,3 +41,9 @@
 /client/next-env.d.ts
 
 /server/.env
+/server/__pycache__
+/server/auth/__pycache__
+/server/user/__pycache__
+/server/config/__pycache__
+/server/server.pyc
+.gitignore
