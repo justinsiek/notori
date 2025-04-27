@@ -2,7 +2,7 @@ import os
 import datetime
 import jwt
 import bcrypt
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, g
 from flask_cors import CORS
 from supabase import create_client, Client
 from dotenv import load_dotenv
@@ -38,6 +38,44 @@ def create_jwt(user_id: str) -> str:
     except Exception as e:
         print(f"Error creating JWT: {e}")
         raise 
+
+def token_required(f):
+    """Decorator to protect routes that require a valid JWT."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = None
+        auth_header = request.headers.get('Authorization')
+
+        if auth_header:
+            parts = auth_header.split()
+            if len(parts) == 2 and parts[0].lower() == 'bearer':
+                token = parts[1]
+            else:
+                 print("Invalid Authorization header format.")
+                 return jsonify({'message': 'Invalid Authorization header format'}), 401
+
+
+        if not token:
+            print("Token is missing.")
+            return jsonify({'message': 'Token is missing!'}), 401
+
+        try:
+            print(f"Attempting to decode token: {token[:10]}...")
+            payload = jwt.decode(token, jwt_secret, algorithms=['HS256'])
+            g.current_user_id = payload['user_id']
+            print(f"Token decoded successfully. User ID: {g.current_user_id}")
+        except jwt.ExpiredSignatureError:
+            print("Token has expired.")
+            return jsonify({'message': 'Token has expired!'}), 401
+        except jwt.InvalidTokenError as e:
+            print(f"Token is invalid: {e}")
+            return jsonify({'message': 'Token is invalid!'}), 401
+        except Exception as e:
+            print(f"Error during token decoding: {e}")
+            return jsonify({'message': 'Token processing error'}), 401
+
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -107,6 +145,24 @@ def login():
     except Exception as e:
         print(f"Exception during login for {email}: {e}")
         return jsonify({'message': 'An error occurred during login'}), 500
+
+@app.route('/api/get_user_data', methods=['GET'])
+@token_required
+def get_user_data():
+    """Example protected route to get user data."""
+    user_id = g.current_user_id
+    print(f"Fetching data for user ID: {user_id}")
+
+    try:
+        response = supabase.table('users').select("id, email, created_at").eq('id', user_id).maybe_single().execute()
+
+        if response.data:
+            return jsonify(response.data)
+        else:
+            return jsonify({'message': 'User not found despite valid token'}), 404
+    except Exception as e:
+        print(f"Error fetching profile for user {user_id}: {e}")
+        return jsonify({'message': 'Error fetching profile data'}), 500
 
 if __name__ == '__main__':
     print("Starting server...")
