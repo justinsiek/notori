@@ -3,7 +3,7 @@
 import { User } from "lucide-react"
 import { useRouter } from 'next/navigation';
 
-export function Navbar() {
+export function Navbar({ user }: { user: any }) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -37,7 +37,7 @@ export function Navbar() {
             <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 shadow-sm">
               <User className="w-4 h-4" />
             </div>
-            <span className="text-sm font-medium text-gray-700">John Doe</span>
+            <span className="text-sm font-medium text-gray-700">{user.name}</span>
           </div>
         </div>
       </div>
