@@ -4,14 +4,12 @@ from flask_cors import CORS
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 supabase_url: str | None = os.getenv('SUPABASE_URL')
 supabase_key: str | None = os.getenv('SUPABASE_KEY')
 jwt_secret: str | None = os.getenv('JWT_SECRET')
 
-# Initialize Supabase client (globally accessible within the config module)
 try:
     if not supabase_url or not supabase_key:
         raise ValueError("Supabase URL/Key not found. Check .env file.")
@@ -19,15 +17,14 @@ try:
     print("Supabase client initialized successfully.")
 except ValueError as e:
     print(f"Error initializing Supabase: {e}")
-    supabase = None # Set to None if initialization fails
+    supabase = None
 except Exception as e:
     print(f"An unexpected error occurred during Supabase initialization: {e}")
     supabase = None
 
 if not jwt_secret:
     print("Warning: JWT_SECRET is not set in .env file. Authentication will fail.")
-    # Optionally raise an error if JWT is critical: 
-    # raise ValueError("JWT Secret not found. Check .env file.")
+    raise ValueError("JWT Secret not found. Check .env file.")
 
 def create_app():
     """Flask application factory."""
