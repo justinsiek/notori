@@ -2,14 +2,14 @@ import { User } from "lucide-react"
 
 export function Navbar() {
   return (
-    <header className="fixed w-full z-50 transition-all duration-300 bg-white border-b border-gray-200">
+    <header className="w-full bg-white border-b border-gray-200">
       <div className="px-10">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <span className="text-xl font-bold tracking-tighter text-black">notori.ai</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 bg-gradient-to-tr from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-gray-500 shadow-sm">
+            <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 shadow-sm">
               <User className="w-4 h-4" />
             </div>
             <span className="text-sm font-medium text-gray-700">John Doe</span>
