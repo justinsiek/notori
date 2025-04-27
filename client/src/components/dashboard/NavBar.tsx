@@ -37,7 +37,7 @@ export function Navbar({ user }: { user: any }) {
             <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 shadow-sm">
               <User className="w-4 h-4" />
             </div>
-            <span className="text-sm font-medium text-gray-700">{user.name}</span>
+            <span className="text-sm font-medium text-gray-700">{user.email}</span>
           </div>
         </div>
       </div>

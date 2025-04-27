@@ -34,23 +34,14 @@ def token_required(f):
              print("JWT secret not configured, cannot verify token.")
              return jsonify({'message': 'Server configuration error'}), 500
 
-        token = None
-        auth_header = request.headers.get('Authorization')
-
-        if auth_header:
-            parts = auth_header.split()
-            if len(parts) == 2 and parts[0].lower() == 'bearer':
-                token = parts[1]
-            else:
-                 print("Invalid Authorization header format.")
-                 return jsonify({'message': 'Invalid Authorization header format'}), 401
+        token = request.cookies.get('jwtToken') # Read token from cookie
 
         if not token:
-            print("Authorization token is missing.")
+            print("Authentication token is missing from cookie.") # Updated message
             return jsonify({'message': 'Token is missing!'}), 401
 
         try:
-            print(f"Attempting to decode token: {token[:10]}...")
+            print(f"Attempting to decode token from cookie: {token[:10]}...") # Updated log message
             payload = jwt.decode(token, jwt_secret, algorithms=['HS256'])
             # Store user_id in Flask's application context global `g`
             g.current_user_id = payload['user_id'] 
