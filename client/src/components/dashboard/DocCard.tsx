@@ -42,7 +42,7 @@ const DocCard = ({ document }: { document: Document }) => {
   };
 
   return (
-    <div className='bg-white h-[240px] w-[210px] shadow-sm flex flex-col overflow-hidden'>
+    <div className='bg-white h-[240px] w-[210px] shadow-sm flex flex-col overflow-hidden cursor-pointer hover:shadow-md'>
       <div className='flex-1 p-4 border-b text-xs text-gray-600 overflow-hidden'>
         <div className='text-xs font-normal'>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.

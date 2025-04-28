@@ -76,21 +76,14 @@ const DocsDisplay = () => {
     );
   }
 
-  if (documents.length === 0) {
-    return (
-      <div className='h-full w-full bg-gray-100 p-12 flex justify-center items-center'>
-        <p className='text-gray-600'>No documents found. Create your first document to get started!</p>
-      </div>
-    );
-  }
-
   return (
     <div className='h-full w-full bg-gray-100 p-12 grid grid-cols-6 gap-12'>
       <div 
-        className='bg-white h-[240px] w-[210px] shadow-sm flex justify-center items-center cursor-pointer hover:shadow-md transition-shadow'
+        className='bg-white h-[240px] w-[210px] shadow-sm flex flex-col justify-center items-center cursor-pointer hover:shadow-md space-y-2'
         onClick={handleCreateDocument}
       >
         <Plus size={24} className='text-black' />
+        <p className='text-gray-600 text-sm'>New Document</p>
       </div>
       {documents.map((document) => (
         <DocCard key={document.id} document={document} />
