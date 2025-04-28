@@ -48,3 +48,32 @@ def create_document():
     except Exception as e:
         print(f"Error creating document: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@documents_bp.route('/', methods=['GET'])
+@token_required
+def get_user_documents():
+    """Retrieves all documents for the authenticated user."""
+    try:
+        user_id = g.current_user_id
+        
+        # Query Supabase for all documents belonging to the user
+        # Order by updated_at in descending order (newest first)
+        result = supabase.table('documents') \
+            .select('*') \
+            .eq('user_id', user_id) \
+            .order('updated_at', desc=True) \
+            .execute()
+        
+        # Extract the documents from the result
+        documents = result.data if result.data else []
+        
+        return jsonify({
+            'documents': documents,
+            'count': len(documents)
+        }), 200
+        
+    except Exception as e:
+        print(f"Error fetching documents: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    
+    
