@@ -1,5 +1,6 @@
 import React from 'react'
 import { MoreVertical } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface Document {
   id: string;
@@ -11,6 +12,8 @@ interface Document {
 }
 
 const DocCard = ({ document }: { document: Document }) => {
+  const router = useRouter();
+
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -41,8 +44,22 @@ const DocCard = ({ document }: { document: Document }) => {
     }
   };
 
+  const handleCardClick = () => {
+    router.push(`/document/${document.id}`);
+  };
+
+  const handleOptionsClick = (e: React.MouseEvent) => {
+    // Prevent navigation when clicking the options button
+    e.stopPropagation();
+    // Handle options menu (future implementation)
+    console.log('Options clicked for document:', document.id);
+  };
+
   return (
-    <div className='bg-white h-[240px] w-[210px] shadow-sm flex flex-col overflow-hidden cursor-pointer hover:shadow-md'>
+    <div 
+      className='bg-white h-[240px] w-[210px] shadow-sm flex flex-col overflow-hidden cursor-pointer hover:shadow-md'
+      onClick={handleCardClick}
+    >
       <div className='flex-1 p-4 border-b text-xs text-gray-600 overflow-hidden'>
         <div className='text-xs font-normal'>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
@@ -54,7 +71,13 @@ const DocCard = ({ document }: { document: Document }) => {
             <div className='text-sm font-medium text-gray-800'>{document.title}</div>
             <div className='text-xs text-gray-500 mt-1'>Updated {formatDate(document.updated_at)}</div>
           </div>
-          <MoreVertical size={16} className='text-gray-500 cursor-pointer' />
+          <div className='cursor-pointer rounded-full p-1 hover:bg-gray-100' onClick={handleOptionsClick}>
+            <MoreVertical 
+              size={16} 
+              className='text-gray-500 cursor-pointer' 
+              onClick={handleOptionsClick}
+            />
+          </div>
         </div>
         
       </div>
