@@ -51,7 +51,6 @@ const DocsDisplay = () => {
       const data = await response.json();
       console.log('Document created:', data);
       
-      // Add the new document to the list
       setDocuments(prevDocuments => [data.document, ...prevDocuments]);
       
     } catch (err) {

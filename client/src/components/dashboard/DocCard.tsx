@@ -49,9 +49,7 @@ const DocCard = ({ document }: { document: Document }) => {
   };
 
   const handleOptionsClick = (e: React.MouseEvent) => {
-    // Prevent navigation when clicking the options button
     e.stopPropagation();
-    // Handle options menu (future implementation)
     console.log('Options clicked for document:', document.id);
   };
 
