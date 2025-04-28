@@ -1,7 +1,46 @@
 import React from 'react'
 import { MoreVertical } from 'lucide-react'
 
-const DocCard = () => {
+interface Document {
+  id: string;
+  title: string;
+  updated_at: string;
+  created_at: string;
+  s3_object_key: string;
+  user_id: string;
+}
+
+const DocCard = ({ document }: { document: Document }) => {
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      
+      if (isNaN(date.getTime())) {
+        return 'Unknown date';
+      }
+      
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffHrs = diffMs / (1000 * 60 * 60);
+      
+      if (diffHrs < 24) {
+        if (diffHrs < 1) {
+          const diffMins = Math.round(diffMs / (1000 * 60));
+          return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+        }
+        const hours = Math.floor(diffHrs);
+        return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+      } else if (diffHrs < 48) {
+        return 'Yesterday';
+      } else {
+        return date.toLocaleDateString();
+      }
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Unknown date';
+    }
+  };
+
   return (
     <div className='bg-white h-[240px] w-[210px] shadow-sm flex flex-col overflow-hidden'>
       <div className='flex-1 p-4 border-b text-xs text-gray-600 overflow-hidden'>
@@ -12,15 +51,15 @@ const DocCard = () => {
       <div className='p-3'>
         <div className='flex items-center justify-between'>
           <div className='flex-col items-center gap-2'>
-            <div className='text-sm font-medium text-gray-800'>Example Document</div>
-            <div className='text-xs text-gray-500 mt-1'>Opened Apr 26, 2025</div>
+            <div className='text-sm font-medium text-gray-800'>{document.title}</div>
+            <div className='text-xs text-gray-500 mt-1'>Updated {formatDate(document.updated_at)}</div>
           </div>
-          <MoreVertical size={16} className='text-gray-500' />
+          <MoreVertical size={16} className='text-gray-500 cursor-pointer' />
         </div>
         
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DocCard
+export default DocCard;
