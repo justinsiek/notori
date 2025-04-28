@@ -4,7 +4,7 @@ import {
   Bold, Italic, Underline, ChevronDown, 
   AlignLeft, AlignCenter, AlignRight, AlignJustify, List, 
   ListOrdered, Link, Image, Table, Quote, 
-  Palette, Highlighter, Indent, Outdent, Type, X, MoreHorizontal
+  Palette, Highlighter, Indent, Outdent, X,
 } from "lucide-react"
 
 export function Toolbar() {
@@ -39,13 +39,6 @@ export function Toolbar() {
         </div>
         
         <div className="h-5 w-px bg-gray-300 mx-1"></div>
-        
-        {/* Headings dropdown */}
-        <div className="flex items-center gap-1 px-2 py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-md cursor-pointer hover:border-gray-300 transition-colors">
-          <Type className="w-4 h-4" />
-          <span>Normal</span>
-          <ChevronDown className="w-3 h-3" />
-        </div>
         
         <div className="h-5 w-px bg-gray-300 mx-1"></div>
         
