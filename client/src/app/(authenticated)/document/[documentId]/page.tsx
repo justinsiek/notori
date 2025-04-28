@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Navbar } from '@/components/document/NavBar'
+import Toolbar from '@/components/document/Toolbar'
 import Editor from '@/components/document/Editor'
 
 interface User {
@@ -50,6 +51,7 @@ const DocumentPage = () => {
   return (
     <div className='flex flex-col h-screen w-screen'>
       {user && <Navbar user={user} />}
+      <Toolbar />
       <div className='flex-1'>
         <div className='flex flex-col h-full w-full bg-gray-100'>
           <Editor />
