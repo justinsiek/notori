@@ -49,13 +49,16 @@ const DocumentPage = () => {
   }
 
   return (
-    <div className='flex flex-col h-screen w-screen'>
-      {user && <Navbar user={user} />}
-      <Toolbar />
-      <div className='flex-1'>
-        <div className='flex flex-col h-full w-full bg-gray-100'>
-          <Editor />
-        </div>
+    <div className='flex flex-col h-screen w-screen overflow-hidden'>
+      {/* Fixed header section */}
+      <div className='flex-none'>
+        {user && <Navbar user={user} />}
+        <Toolbar />
+      </div>
+      
+      {/* Scrollable content area */}
+      <div className='flex-1 overflow-hidden bg-gray-100'>
+        <Editor />
       </div>
     </div>
   )

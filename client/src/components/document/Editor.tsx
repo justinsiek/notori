@@ -8,10 +8,11 @@ const Editor = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full items-center overflow-auto pt-8 px-4">
-      <div className="w-full max-w-3xl flex flex-col h-full bg-white shadow-sm rounded-sm">
+    <div className="flex flex-col items-center w-full h-full overflow-auto py-8 px-4">
+      <div className="w-[210mm] min-h-[297mm] bg-white shadow-md mb-8 flex flex-col">
+        {/* Editor content */}
         <textarea
-          className="w-full flex-grow p-18 outline-none resize-none"
+          className="w-full h-full p-16 outline-none resize-none"
           value={content}
           onChange={handleContentChange}
         />
