@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import Sidebar from './Sidebar';
 
-const Editor = () => {
+interface EditorProps {
+  sidebarOpen: boolean;
+}
+
+const Editor = ({ sidebarOpen }: EditorProps) => {
   const [content, setContent] = useState<string>('');
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -8,15 +13,31 @@ const Editor = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full h-full overflow-auto py-8 px-4">
-      <div className="w-[210mm] min-h-[297mm] bg-white shadow-md mb-8 flex flex-col">
-        {/* Editor content */}
-        <textarea
-          className="w-full h-full p-16 outline-none resize-none"
-          value={content}
-          onChange={handleContentChange}
-        />
+    <div className="flex w-full h-full overflow-hidden">
+      {/* Main editor area (adjust width based on sidebar visibility) */}
+      <div className={`${sidebarOpen ? 'w-4/5' : 'w-full'} flex flex-col items-center overflow-auto py-12 px-4 
+      [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent 
+      [&::-webkit-scrollbar-thumb]:bg-gray-100
+      hover:[&::-webkit-scrollbar-thumb]:bg-gray-200`}>
+        <div className="w-[210mm] min-h-[297mm] bg-white shadow-md mb-8 flex flex-col">
+          {/* Editor content */}
+          <textarea
+            className="w-full h-full p-16 outline-none resize-none text-sm"
+            value={content}
+            onChange={handleContentChange}
+          />
+        </div>
       </div>
+      
+      {/* Sidebar (conditionally shown) */}
+      {sidebarOpen && (
+        <div className="w-1/5 border-l border-gray-200 overflow-auto
+        [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent 
+        [&::-webkit-scrollbar-thumb]:bg-gray-200
+        hover:[&::-webkit-scrollbar-thumb]:bg-gray-300">
+          <Sidebar />
+        </div>
+      )}
     </div>
   );
 };

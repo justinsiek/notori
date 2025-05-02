@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react';
-import { User, Save, History } from "lucide-react"
+import { User, Save, History, Bot } from "lucide-react"
 import { useRouter } from 'next/navigation';
 
-export function Navbar({ user }: { user: any }) {
+export function Navbar({ user, toggleSidebar }: { user: any, toggleSidebar: () => void }) {
   const router = useRouter();
   const [title, setTitle] = useState<string>('Untitled Document');
   
@@ -68,6 +68,13 @@ export function Navbar({ user }: { user: any }) {
             
             <button className="flex items-center gap-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-3 rounded-md text-sm transition-colors">
               <History className="w-4 h-4" />
+            </button>
+
+            <button 
+              onClick={toggleSidebar}
+              className="flex items-center gap-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-3 rounded-md text-sm transition-colors"
+            >
+              <Bot className="w-4 h-4" />
             </button>
             
             <div 

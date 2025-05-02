@@ -15,6 +15,11 @@ const DocumentPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -52,13 +57,12 @@ const DocumentPage = () => {
     <div className='flex flex-col h-screen w-screen overflow-hidden'>
       {/* Fixed header section */}
       <div className='flex-none'>
-        {user && <Navbar user={user} />}
-        <Toolbar />
+        {user && <Navbar user={user} toggleSidebar={toggleSidebar} />}
       </div>
       
       {/* Scrollable content area */}
       <div className='flex-1 overflow-hidden bg-gray-100'>
-        <Editor />
+        <Editor sidebarOpen={sidebarOpen} />
       </div>
     </div>
   )
