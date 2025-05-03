@@ -212,5 +212,4 @@ def get_document_content(document_id):
     except Exception as e:
         print(f"Error fetching document content: {str(e)}")
         return jsonify({'error': str(e)}), 500
-    
-    
+

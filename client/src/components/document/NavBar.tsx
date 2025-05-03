@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { User, Save, History, Bot } from "lucide-react"
 import { useRouter } from 'next/navigation';
 
-export function Navbar({ user, toggleSidebar }: { user: any, toggleSidebar: () => void }) {
+export function Navbar({ user, toggleSidebar, initialTitle }: { user: any, toggleSidebar: () => void, initialTitle: string }) {
   const router = useRouter();
-  const [title, setTitle] = useState<string>('Untitled Document');
+  const [title, setTitle] = useState<string>(initialTitle);
   
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -54,7 +54,7 @@ export function Navbar({ user, toggleSidebar }: { user: any, toggleSidebar: () =
               className="text-lg font-medium text-gray-800 text-center outline-none bg-transparent max-w-[200px] sm:max-w-xs"
               value={title}
               onChange={handleTitleChange}
-              placeholder="Untitled Document"
+              placeholder={initialTitle}
             />
           </div>
           
