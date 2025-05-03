@@ -11,22 +11,32 @@ export function Navbar({
   documentId,
   isSaving,
   lastSaved,
-  onTitleSave
+  onTitleSave,
+  onEditStart
 }: { 
   user: any, 
   toggleSidebar: () => void, 
   initialTitle: string,
   documentId: string,
   isSaving?: boolean,
-  lastSaved?: string | null,
-  onTitleSave?: () => void
+  lastSaved?: boolean,
+  onTitleSave?: () => void,
+  onEditStart?: () => void
 }) {
   const router = useRouter();
   const [title, setTitle] = useState<string>(initialTitle);
   const [isTitleSaving, setIsTitleSaving] = useState<boolean>(false);
+  const [hasEditedTitle, setHasEditedTitle] = useState<boolean>(false);
   
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    
+    // Notify parent on first edit only
+    if (!hasEditedTitle && newTitle !== initialTitle && onEditStart) {
+      onEditStart();
+      setHasEditedTitle(true);
+    }
   };
 
   const handleLogout = async () => {
@@ -103,14 +113,13 @@ export function Navbar({
               value={title}
               onChange={handleTitleChange}
               onBlur={handleSave} 
-              placeholder={initialTitle}
             />
           </div>
           
           {/* Action buttons - right column */}
           <div className="flex items-center justify-end gap-3">
             <span className="text-xs text-gray-500">
-              {isSaving || isTitleSaving ? 'Saving...' : lastSaved ? `Saved ${lastSaved}` : 'Not Saved'}
+              {isSaving || isTitleSaving ? 'Saving...' : lastSaved ? 'Saved' : ''}
             </span>
             
             <button 

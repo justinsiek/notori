@@ -32,7 +32,7 @@ const DocumentPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [lastSaved, setLastSaved] = useState<boolean>(true);
 
   const toggleSidebar = () => {
     setSidebarOpen(prev => !prev);
@@ -88,7 +88,7 @@ const DocumentPage = () => {
       }
       
       setContent(newContent);
-      setLastSaved('just now');
+      setLastSaved(true);
     } catch (error) {
       console.error('Error saving content:', error);
     } finally {
@@ -97,7 +97,11 @@ const DocumentPage = () => {
   }, [documentId, isSaving]);
 
   const handleTitleSave = useCallback(() => {
-    setLastSaved('just now');
+    setLastSaved(true);
+  }, []);
+
+  const handleEditStart = useCallback(() => {
+    setLastSaved(false);
   }, []);
 
   if (loading) {
@@ -120,6 +124,7 @@ const DocumentPage = () => {
           isSaving={isSaving}
           lastSaved={lastSaved}
           onTitleSave={handleTitleSave}
+          onEditStart={handleEditStart}
         />}
       </div>
       
@@ -130,6 +135,7 @@ const DocumentPage = () => {
           initialContent={content} 
           onSave={saveContent}
           documentId={documentId}
+          onEditStart={handleEditStart}
         />
       </div>
     </div>

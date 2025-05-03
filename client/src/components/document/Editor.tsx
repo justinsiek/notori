@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Sidebar from './Sidebar';
 
 interface EditorProps {
@@ -6,37 +6,68 @@ interface EditorProps {
   initialContent: string;
   onSave: (content: string) => Promise<void>;
   documentId: string;
+  onEditStart?: () => void;
 }
 
-const Editor = ({ sidebarOpen, initialContent, onSave, documentId }: EditorProps) => {
+const Editor = ({ sidebarOpen, initialContent, onSave, documentId, onEditStart }: EditorProps) => {
   const [content, setContent] = useState<string>(initialContent);
-  const [lastEditTime, setLastEditTime] = useState<number | null>(null);
+  const contentRef = useRef<string>(initialContent);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedContentRef = useRef<string>(initialContent);
+  const isTypingRef = useRef<boolean>(false);
+  const hasEditedRef = useRef<boolean>(false);
+  
+  const saveContent = useCallback(() => {
+    // only save if content has changed since last save
+    if (contentRef.current !== lastSavedContentRef.current) {
+      onSave(contentRef.current);
+      lastSavedContentRef.current = contentRef.current;
+    }
+    saveTimeoutRef.current = null;
+  }, [onSave]);
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-    setLastEditTime(Date.now());
+    const newContent = e.target.value;
+    
+    // Notify parent on first edit only
+    if (!hasEditedRef.current && newContent !== initialContent && onEditStart) {
+      onEditStart();
+      hasEditedRef.current = true;
+    }
+    
+    setContent(newContent);
+    contentRef.current = newContent;
+    isTypingRef.current = true;
+    
+    scheduleSave();
   };
   
-  // Auto-save content when user stops typing
+  const scheduleSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    saveTimeoutRef.current = setTimeout(() => {
+      isTypingRef.current = false;
+      saveContent();
+    }, 5000); 
+  }, [saveContent]);
+  
   useEffect(() => {
-    if (!lastEditTime) return;
-    
-    const saveTimeout = setTimeout(() => {
-      onSave(content);
-    }, 5000); // Save 5 seconds after last edit
-    
-    return () => clearTimeout(saveTimeout);
-  }, [content, lastEditTime, onSave]);
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="flex w-full h-full overflow-hidden">
-      {/* Main editor area (adjust width based on sidebar visibility) */}
       <div className={`${sidebarOpen ? 'w-4/5' : 'w-full'} flex flex-col items-center overflow-auto py-12 px-4 
       [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent 
       [&::-webkit-scrollbar-thumb]:bg-gray-100
       hover:[&::-webkit-scrollbar-thumb]:bg-gray-200`}>
         <div className="w-[210mm] min-h-[297mm] bg-white shadow-md mb-8 flex flex-col">
-          {/* Editor content */}
           <textarea
             className="w-full h-full p-16 outline-none resize-none text-sm"
             value={content}
@@ -45,7 +76,6 @@ const Editor = ({ sidebarOpen, initialContent, onSave, documentId }: EditorProps
         </div>
       </div>
       
-      {/* Sidebar (conditionally shown) */}
       {sidebarOpen && (
         <div className="w-1/5 border-l border-gray-200 overflow-auto
         [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent 
