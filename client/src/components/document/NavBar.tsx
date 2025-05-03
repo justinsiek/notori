@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { User, Save, History, Bot } from "lucide-react"
+import { User, Save, History, Bot, Check, Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation';
 
 export function Navbar({ 
@@ -118,8 +118,18 @@ export function Navbar({
           
           {/* Action buttons - right column */}
           <div className="flex items-center justify-end gap-3">
-            <span className="text-xs text-gray-500">
-              {isSaving || isTitleSaving ? 'Saving...' : lastSaved ? 'Saved' : ''}
+            <span className="text-xs text-gray-500 flex items-center gap-1">
+              {isSaving || isTitleSaving ? (
+                <>
+                  Saving
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                </>
+              ) : lastSaved ? (
+                <>
+                  Saved
+                  <Check className="w-4 h-4 scale-x-80" />
+                </>
+              ) : ''}
             </span>
             
             <button 

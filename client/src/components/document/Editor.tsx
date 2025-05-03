@@ -50,7 +50,7 @@ const Editor = ({ sidebarOpen, initialContent, onSave, documentId, onEditStart }
     saveTimeoutRef.current = setTimeout(() => {
       isTypingRef.current = false;
       saveContent();
-    }, 5000); 
+    }, 500); 
   }, [saveContent]);
   
   useEffect(() => {
