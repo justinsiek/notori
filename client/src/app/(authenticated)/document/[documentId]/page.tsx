@@ -85,7 +85,7 @@ const DocumentPage = () => {
       
       {/* Scrollable content area */}
       <div className='flex-1 overflow-hidden bg-gray-100'>
-        <Editor sidebarOpen={sidebarOpen} />
+        <Editor sidebarOpen={sidebarOpen} initialContent={content} />
       </div>
     </div>
   )

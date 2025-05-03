@@ -3,10 +3,11 @@ import Sidebar from './Sidebar';
 
 interface EditorProps {
   sidebarOpen: boolean;
+  initialContent: string;
 }
 
-const Editor = ({ sidebarOpen }: EditorProps) => {
-  const [content, setContent] = useState<string>('');
+const Editor = ({ sidebarOpen, initialContent }: EditorProps) => {
+  const [content, setContent] = useState<string>(initialContent);
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
