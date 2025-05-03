@@ -75,5 +75,49 @@ def get_user_documents():
     except Exception as e:
         print(f"Error fetching documents: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@documents_bp.route('/<document_id>/metadata', methods=['PUT'])
+@token_required
+def update_document_metadata(document_id):
+    """Updates document metadata (title, updated_at)."""
+    try:
+        user_id = g.current_user_id
+        data = request.json
+        
+        # Check if document exists and belongs to user
+        doc_result = supabase.table('documents') \
+            .select('*') \
+            .eq('id', document_id) \
+            .eq('user_id', user_id) \
+            .execute()
+            
+        if not doc_result.data:
+            return jsonify({'error': 'Document not found or not authorized'}), 404
+        
+        # Get title from request
+        title = data.get('title')
+        if not title:
+            title = "Untitled"
+        
+        # Update document metadata in database
+        update_data = {
+            'title': title,
+            'updated_at': datetime.now().isoformat()
+        }
+        
+        # Update document in database
+        update_result = supabase.table('documents') \
+            .update(update_data) \
+            .eq('id', document_id) \
+            .execute()
+            
+        return jsonify({
+            'message': 'Document metadata updated successfully',
+            'document': update_result.data[0] if update_result.data else None
+        }), 200
+        
+    except Exception as e:
+        print(f"Error updating document metadata: {str(e)}")
+        return jsonify({'error': str(e)}), 500
     
     
