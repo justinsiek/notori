@@ -4,9 +4,26 @@ import { useState } from 'react';
 import { User, Save, History, Bot } from "lucide-react"
 import { useRouter } from 'next/navigation';
 
-export function Navbar({ user, toggleSidebar, initialTitle }: { user: any, toggleSidebar: () => void, initialTitle: string }) {
+export function Navbar({ 
+  user, 
+  toggleSidebar, 
+  initialTitle, 
+  documentId,
+  isSaving,
+  lastSaved,
+  onTitleSave
+}: { 
+  user: any, 
+  toggleSidebar: () => void, 
+  initialTitle: string,
+  documentId: string,
+  isSaving?: boolean,
+  lastSaved?: string | null,
+  onTitleSave?: () => void
+}) {
   const router = useRouter();
   const [title, setTitle] = useState<string>(initialTitle);
+  const [isTitleSaving, setIsTitleSaving] = useState<boolean>(false);
   
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -32,6 +49,37 @@ export function Navbar({ user, toggleSidebar, initialTitle }: { user: any, toggl
     }
   };
 
+  const handleSave = async () => {
+    if (isTitleSaving) return;
+    
+    setIsTitleSaving(true);
+    try {
+      // Save document title
+      const response = await fetch(`/api/documents/${documentId}/metadata`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          title: title 
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save document');
+      }
+      
+      // Notify parent that title was saved
+      if (onTitleSave) {
+        onTitleSave();
+      }
+    } catch (error) {
+      console.error('Error saving document:', error);
+    } finally {
+      setIsTitleSaving(false);
+    }
+  };
+
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm">
       {/* Main navbar */}
@@ -54,15 +102,22 @@ export function Navbar({ user, toggleSidebar, initialTitle }: { user: any, toggl
               className="text-lg font-medium text-gray-800 text-center outline-none bg-transparent max-w-[200px] sm:max-w-xs"
               value={title}
               onChange={handleTitleChange}
+              onBlur={handleSave} 
               placeholder={initialTitle}
             />
           </div>
           
           {/* Action buttons - right column */}
           <div className="flex items-center justify-end gap-3">
-            <span className="text-xs text-gray-500">Autosaved 5 seconds ago</span>
+            <span className="text-xs text-gray-500">
+              {isSaving || isTitleSaving ? 'Saving...' : lastSaved ? `Saved ${lastSaved}` : 'Not Saved'}
+            </span>
             
-            <button className="flex items-center gap-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-3 rounded-md text-sm transition-colors">
+            <button 
+              className="flex items-center gap-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-3 rounded-md text-sm transition-colors"
+              onClick={handleSave}
+              disabled={isTitleSaving || isSaving}
+            >
               <Save className="w-4 h-4" />
             </button>
             

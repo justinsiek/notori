@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from './Sidebar';
 
 interface EditorProps {
   sidebarOpen: boolean;
   initialContent: string;
+  onSave: (content: string) => Promise<void>;
+  documentId: string;
 }
 
-const Editor = ({ sidebarOpen, initialContent }: EditorProps) => {
+const Editor = ({ sidebarOpen, initialContent, onSave, documentId }: EditorProps) => {
   const [content, setContent] = useState<string>(initialContent);
+  const [lastEditTime, setLastEditTime] = useState<number | null>(null);
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
+    setLastEditTime(Date.now());
   };
+  
+  // Auto-save content when user stops typing
+  useEffect(() => {
+    if (!lastEditTime) return;
+    
+    const saveTimeout = setTimeout(() => {
+      onSave(content);
+    }, 5000); // Save 5 seconds after last edit
+    
+    return () => clearTimeout(saveTimeout);
+  }, [content, lastEditTime, onSave]);
 
   return (
     <div className="flex w-full h-full overflow-hidden">

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Navbar } from '@/components/document/NavBar'
 import Toolbar from '@/components/document/Toolbar'
 import Editor from '@/components/document/Editor'
@@ -31,6 +31,8 @@ const DocumentPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
 
   const toggleSidebar = () => {
     setSidebarOpen(prev => !prev);
@@ -68,6 +70,36 @@ const DocumentPage = () => {
     fetchUserAndDocument();
   }, [documentId]);
 
+  const saveContent = useCallback(async (newContent: string) => {
+    if (isSaving) return;
+    
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/documents/${documentId}/content`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        body: newContent,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save content');
+      }
+      
+      setContent(newContent);
+      setLastSaved('just now');
+    } catch (error) {
+      console.error('Error saving content:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [documentId, isSaving]);
+
+  const handleTitleSave = useCallback(() => {
+    setLastSaved('just now');
+  }, []);
+
   if (loading) {
     return <div>Loading document...</div>; 
   }
@@ -80,12 +112,25 @@ const DocumentPage = () => {
     <div className='flex flex-col h-screen w-screen overflow-hidden'>
       {/* Fixed header section */}
       <div className='flex-none'>
-        {user && <Navbar user={user} toggleSidebar={toggleSidebar} initialTitle={document?.title || 'Untitled'} />}
+        {user && <Navbar 
+          user={user} 
+          toggleSidebar={toggleSidebar} 
+          initialTitle={document?.title || 'Untitled'} 
+          documentId={documentId}
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          onTitleSave={handleTitleSave}
+        />}
       </div>
       
       {/* Scrollable content area */}
       <div className='flex-1 overflow-hidden bg-gray-100'>
-        <Editor sidebarOpen={sidebarOpen} initialContent={content} />
+        <Editor 
+          sidebarOpen={sidebarOpen} 
+          initialContent={content} 
+          onSave={saveContent}
+          documentId={documentId}
+        />
       </div>
     </div>
   )
