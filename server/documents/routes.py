@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, g
 import uuid
 from datetime import datetime
 
-from server.config import supabase
+from server.config import supabase, s3_client, S3_BUCKET_NAME
 from server.auth.utils import token_required
 
 documents_bp = Blueprint('documents_bp', __name__, url_prefix='/api/documents')
@@ -118,6 +118,99 @@ def update_document_metadata(document_id):
         
     except Exception as e:
         print(f"Error updating document metadata: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@documents_bp.route('/<document_id>/content', methods=['PUT'])
+@token_required
+def update_document_content(document_id):
+    """Updates document content in S3 bucket."""
+    try:
+        user_id = g.current_user_id
+        content = request.data.decode('utf-8')  # Get raw content
+
+        if not content:
+            return jsonify({'error': 'No content provided'}), 400
+        
+        # Check if document exists and belongs to user
+        doc_result = supabase.table('documents') \
+            .select('*') \
+            .eq('id', document_id) \
+            .eq('user_id', user_id) \
+            .execute()
+            
+        if not doc_result.data:
+            return jsonify({'error': 'Document not found or not authorized'}), 404
+        
+        document = doc_result.data[0]
+        s3_object_key = document['s3_object_key']
+        
+        # Upload content to S3
+        s3_client.put_object(
+            Bucket=S3_BUCKET_NAME,
+            Key=s3_object_key,
+            Body=content,
+            ContentType='text/plain'
+        )
+        
+        # Update the document's updated_at timestamp
+        supabase.table('documents') \
+            .update({'updated_at': datetime.now().isoformat()}) \
+            .eq('id', document_id) \
+            .execute()
+        
+        return jsonify({
+            'message': 'Document content updated successfully',
+            'document_id': document_id
+        }), 200
+        
+    except Exception as e:
+        print(f"Error updating document content: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@documents_bp.route('/<document_id>/content', methods=['GET'])
+@token_required
+def get_document_content(document_id):
+    """Retrieves document content from S3 bucket."""
+    try:
+        user_id = g.current_user_id
+        
+        # Check if document exists and belongs to user
+        doc_result = supabase.table('documents') \
+            .select('*') \
+            .eq('id', document_id) \
+            .eq('user_id', user_id) \
+            .execute()
+            
+        if not doc_result.data:
+            return jsonify({'error': 'Document not found or not authorized'}), 404
+        
+        document = doc_result.data[0]
+        s3_object_key = document['s3_object_key']
+        
+        # Get file from S3
+        from server.config import s3_client, S3_BUCKET_NAME
+        
+        try:
+            response = s3_client.get_object(
+                Bucket=S3_BUCKET_NAME,
+                Key=s3_object_key
+            )
+            content = response['Body'].read().decode('utf-8')
+            
+            return jsonify({
+                'content': content,
+                'document': document
+            }), 200
+            
+        except s3_client.exceptions.NoSuchKey:
+            # Document exists in DB but not in S3 yet
+            return jsonify({
+                'content': '',
+                'document': document
+            }), 200
+            
+    except Exception as e:
+        print(f"Error fetching document content: {str(e)}")
         return jsonify({'error': str(e)}), 500
     
     
