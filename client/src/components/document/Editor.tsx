@@ -29,10 +29,8 @@ const Editor = ({ sidebarOpen, initialContent, onSave, documentId, onEditStart }
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
     
-    // Notify parent on first edit only
-    if (!hasEditedRef.current && newContent !== initialContent && onEditStart) {
+    if (newContent !== contentRef.current && onEditStart) {
       onEditStart();
-      hasEditedRef.current = true;
     }
     
     setContent(newContent);

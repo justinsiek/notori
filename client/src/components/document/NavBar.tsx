@@ -30,13 +30,13 @@ export function Navbar({
   
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
-    setTitle(newTitle);
     
-    // Notify parent on first edit only
-    if (!hasEditedTitle && newTitle !== initialTitle && onEditStart) {
+    // Call onEditStart whenever title changes from its current value
+    if (newTitle !== title && onEditStart) {
       onEditStart();
-      setHasEditedTitle(true);
     }
+    
+    setTitle(newTitle);
   };
 
   const handleLogout = async () => {
