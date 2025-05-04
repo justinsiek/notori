@@ -35,6 +35,9 @@ const DocCard = ({ document, onDelete }: DocCardProps) => {
       if (diffHrs < 24) {
         if (diffHrs < 1) {
           const diffMins = Math.round(diffMs / (1000 * 60));
+          if (diffMins === 0) {
+            return 'just now';
+          }
           return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
         }
         const hours = Math.floor(diffHrs);

@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, g
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from server.config import supabase, s3_client, S3_BUCKET_NAME
 from server.auth.utils import token_required
@@ -22,8 +22,8 @@ def create_document():
             'user_id': user_id,
             'title': 'Untitled',
             's3_object_key': s3_object_key,
-            'created_at': datetime.now().isoformat(),
-            'updated_at': datetime.now().isoformat()
+            'created_at': datetime.now(timezone.utc).isoformat(),
+            'updated_at': datetime.now(timezone.utc).isoformat()
         }
         
         result = supabase.table('documents').insert(document_data).execute()
@@ -102,7 +102,7 @@ def update_document_metadata(document_id):
         # Update document metadata in database
         update_data = {
             'title': title,
-            'updated_at': datetime.now().isoformat()
+            'updated_at': datetime.now(timezone.utc).isoformat()
         }
         
         # Update document in database
@@ -157,7 +157,7 @@ def update_document_content(document_id):
         # Update document with preview and timestamp
         supabase.table('documents') \
             .update({
-                'updated_at': datetime.now().isoformat(),
+                'updated_at': datetime.now(timezone.utc).isoformat(),
                 'preview': preview
             }) \
             .eq('id', document_id) \
