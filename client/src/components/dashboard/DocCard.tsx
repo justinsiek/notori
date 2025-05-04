@@ -91,7 +91,7 @@ const DocCard = ({ document, onDelete }: DocCardProps) => {
       <div className='p-3'>
         <div className='flex items-center justify-between'>
           <div className='flex-col items-center gap-2'>
-            <div className='text-sm font-medium text-gray-800'>{document.title}</div>
+            <div className='text-sm font-medium text-gray-800 truncate overflow-hidden max-w-[150px]'>{document.title}</div>
             <div className='text-xs text-gray-500 mt-1'>Updated {formatDate(document.updated_at)}</div>
           </div>
           <div className='cursor-pointer rounded-full p-1 hover:bg-gray-100' onClick={handleOptionsClick}>
