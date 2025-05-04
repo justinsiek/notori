@@ -126,10 +126,12 @@ def update_document_content(document_id):
     """Updates document content in S3 bucket."""
     try:
         user_id = g.current_user_id
-        content = request.data.decode('utf-8')  # Get raw content
+        content = request.data.decode('utf-8')
 
         if not content:
             return jsonify({'error': 'No content provided'}), 400
+        
+        preview = content[:250] + '...' if len(content) > 250 else content
         
         # Check if document exists and belongs to user
         doc_result = supabase.table('documents') \
@@ -152,9 +154,12 @@ def update_document_content(document_id):
             ContentType='text/plain'
         )
         
-        # Update the document's updated_at timestamp
+        # Update document with preview and timestamp
         supabase.table('documents') \
-            .update({'updated_at': datetime.now().isoformat()}) \
+            .update({
+                'updated_at': datetime.now().isoformat(),
+                'preview': preview
+            }) \
             .eq('id', document_id) \
             .execute()
         

@@ -26,12 +26,10 @@ export function Navbar({
   const router = useRouter();
   const [title, setTitle] = useState<string>(initialTitle);
   const [isTitleSaving, setIsTitleSaving] = useState<boolean>(false);
-  const [hasEditedTitle, setHasEditedTitle] = useState<boolean>(false);
   
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
     
-    // Call onEditStart whenever title changes from its current value
     if (newTitle !== title && onEditStart) {
       onEditStart();
     }

@@ -9,6 +9,7 @@ interface Document {
   created_at: string;
   s3_object_key: string;
   user_id: string;
+  preview: string;
 }
 
 const DocCard = ({ document }: { document: Document }) => {
@@ -59,8 +60,8 @@ const DocCard = ({ document }: { document: Document }) => {
       onClick={handleCardClick}
     >
       <div className='flex-1 p-4 border-b text-xs text-gray-600 overflow-hidden'>
-        <div className='text-xs font-normal'>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+        <div className='text-[10px] font-normal'>
+          {document.preview}
         </div>
       </div>
       <div className='p-3'>
