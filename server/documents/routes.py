@@ -218,3 +218,44 @@ def get_document_content(document_id):
         print(f"Error fetching document content: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@documents_bp.route('/<document_id>', methods=['DELETE'])
+@token_required
+def delete_document(document_id):
+    """Deletes a document and its content from S3."""
+    try:
+        user_id = g.current_user_id
+        
+        # Check if document exists and belongs to user
+        doc_result = supabase.table('documents') \
+            .select('*') \
+            .eq('id', document_id) \
+            .eq('user_id', user_id) \
+            .execute()
+            
+        if not doc_result.data:
+            return jsonify({'error': 'Document not found or not authorized'}), 404
+        
+        document = doc_result.data[0]
+        s3_object_key = document['s3_object_key']
+        
+        # Delete document content from S3
+        s3_client.delete_object(
+            Bucket=S3_BUCKET_NAME,
+            Key=s3_object_key
+        )
+        
+        # Delete document record from database
+        supabase.table('documents') \
+            .delete() \
+            .eq('id', document_id) \
+            .execute()
+        
+        return jsonify({
+            'message': 'Document deleted successfully',
+            'document_id': document_id
+        }), 200
+        
+    except Exception as e:
+        print(f"Error deleting document: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+

@@ -59,6 +59,12 @@ const DocsDisplay = () => {
     }
   };
 
+  const handleDeleteDocument = (documentId: string) => {
+    setDocuments(prevDocuments => 
+      prevDocuments.filter(doc => doc.id !== documentId)
+    );
+  };
+
   if (loading) {
     return (
       <div className='h-full w-full bg-gray-100 p-12 flex justify-center items-center'>
@@ -85,7 +91,11 @@ const DocsDisplay = () => {
         <p className='text-gray-600 text-sm'>New Document</p>
       </div>
       {documents.map((document) => (
-        <DocCard key={document.id} document={document} />
+        <DocCard 
+          key={document.id} 
+          document={document} 
+          onDelete={handleDeleteDocument}
+        />
       ))}
     </div>
   );

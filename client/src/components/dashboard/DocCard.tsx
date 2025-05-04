@@ -12,7 +12,12 @@ interface Document {
   preview: string;
 }
 
-const DocCard = ({ document }: { document: Document }) => {
+interface DocCardProps {
+  document: Document;
+  onDelete?: (documentId: string) => void;
+}
+
+const DocCard = ({ document, onDelete }: DocCardProps) => {
   const router = useRouter();
 
   const formatDate = (dateString: string) => {
@@ -49,9 +54,25 @@ const DocCard = ({ document }: { document: Document }) => {
     router.push(`/document/${document.id}`);
   };
 
-  const handleOptionsClick = (e: React.MouseEvent) => {
+  const handleOptionsClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('Options clicked for document:', document.id);
+    
+    try {
+      const response = await fetch(`/api/documents/${document.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      if (onDelete) {
+        onDelete(document.id);
+      }
+    } catch (error) {
+      console.error('Failed to delete document:', error);
+    }
   };
 
   return (
