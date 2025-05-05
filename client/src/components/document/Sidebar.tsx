@@ -7,7 +7,12 @@ interface Message {
   isUser: boolean;
 }
 
-const Sidebar = () => {
+interface SidebarProps {
+  documentContent: string;
+  documentId: string;
+}
+
+const Sidebar = ({ documentContent, documentId }: SidebarProps) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([{content: 'Hello, how can I help you today?', isUser: false}]);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +34,11 @@ const Sidebar = () => {
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userInput }),
+        body: JSON.stringify({ 
+          prompt: userInput,
+          documentContent: documentContent,
+          documentId: documentId
+        }),
       });
       
       const data = await response.json();

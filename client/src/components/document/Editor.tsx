@@ -79,7 +79,7 @@ const Editor = ({ sidebarOpen, initialContent, onSave, documentId, onEditStart }
         [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent 
         [&::-webkit-scrollbar-thumb]:bg-gray-200
         hover:[&::-webkit-scrollbar-thumb]:bg-gray-300">
-          <Sidebar />
+          <Sidebar documentContent={content} documentId={documentId} />
         </div>
       )}
     </div>

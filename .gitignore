@@ -47,3 +47,4 @@
 /server/ai/__pycache__
 /server/server.pyc
 .gitignore
+/server/ai/systemprompt.txt

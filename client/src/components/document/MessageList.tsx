@@ -31,7 +31,6 @@ const MessageList = ({ messages, isLoading }: MessageListProps) => {
             <ReactMarkdown
               remarkPlugins={[remarkGfm]} 
               components={{
-                // Headings
                 h1: ({children}) => <h1 className="text-xl font-bold my-3">{children}</h1>,
                 h2: ({children}) => <h2 className="text-lg font-bold my-2">{children}</h2>,
                 h3: ({children}) => <h3 className="text-base font-bold my-2">{children}</h3>,
@@ -39,12 +38,10 @@ const MessageList = ({ messages, isLoading }: MessageListProps) => {
                 h5: ({children}) => <h5 className="text-sm font-bold my-1">{children}</h5>,
                 h6: ({children}) => <h6 className="text-sm font-bold my-1">{children}</h6>,
                 
-                // Paragraphs and text formatting
                 p: ({children}) => <p className="text-sm my-2 text-gray-800">{children}</p>,
                 strong: ({children}) => <strong className="font-bold text-gray-900">{children}</strong>,
                 em: ({children}) => <em className="italic text-gray-800">{children}</em>,
                 
-                // Links
                 a: ({href, children}) => (
                   <a 
                     href={href} 
@@ -56,7 +53,6 @@ const MessageList = ({ messages, isLoading }: MessageListProps) => {
                   </a>
                 ),
                 
-                // Code blocks
                 code: ({className, children, ...props}) => {
                   const match = /language-(\w+)/.exec(className || '');
                   const isInline = !match;
@@ -72,17 +68,14 @@ const MessageList = ({ messages, isLoading }: MessageListProps) => {
                   );
                 },
                 
-                // Lists
                 ul: ({children}) => <ul className="list-disc pl-6 my-2 text-sm">{children}</ul>,
                 ol: ({children}) => <ol className="list-decimal pl-6 my-2 text-sm">{children}</ol>,
                 li: ({children}) => <li className="my-1 text-gray-800">{children}</li>,
                 
-                // Blockquotes
                 blockquote: ({children}) => (
                   <blockquote className="border-l-4 border-blue-300 pl-3 my-3 italic bg-blue-50 py-2 text-sm text-gray-700">{children}</blockquote>
                 ),
                 
-                // Tables
                 table: ({children}) => (
                   <div className="my-3 overflow-x-auto">
                     <table className="min-w-full text-sm border-collapse">{children}</table>
@@ -94,7 +87,6 @@ const MessageList = ({ messages, isLoading }: MessageListProps) => {
                 th: ({children}) => <th className="border border-gray-300 px-3 py-2 font-bold bg-gray-50">{children}</th>,
                 td: ({children}) => <td className="border border-gray-300 px-3 py-2">{children}</td>,
                 
-                // Horizontal rule
                 hr: () => <hr className="my-4 border-t-2 border-gray-300" />
               }}
             >

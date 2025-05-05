@@ -14,14 +14,20 @@ else:
     client = None
     print("Warning: GEMINI_API_KEY not set in environment variables")
 
-
-
 @ai_bp.route('/generate', methods=['POST'])
 @token_required
 def generate_response():
     data = request.json
     prompt = data.get('prompt')
+    document_content = data.get('documentContent', '')
+    document_id = data.get('documentId', '')
+
+    print("hello")
     
+    if document_content:
+        print(f"Recieved document content")
+    else:
+        print("no document content")
     if not prompt:
         return jsonify({'error': 'Prompt is required'}), 400
     
@@ -32,13 +38,15 @@ def generate_response():
         model = "gemini-2.0-flash"
         system_prompt = get_system_prompt()
         
+        # Combine the document content with the user's prompt
+        full_prompt = f"DOCUMENT CONTENT:\n\n{document_content}\n\nUSER REQUEST:\n{prompt}"
+        
         content = types.Content(
-            parts=[{"text": prompt}],
+            parts=[{"text": full_prompt}],
             role="user"
         )
         
         generation_config = types.GenerateContentConfig(
-            max_output_tokens=1024,
             temperature=0.7,
         )
         
