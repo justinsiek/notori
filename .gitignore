@@ -1,5 +1,4 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /client/node_modules
 /client/.pnp
@@ -45,5 +44,6 @@
 /server/auth/__pycache__
 /server/user/__pycache__
 /server/config/__pycache__
+/server/ai/__pycache__
 /server/server.pyc
 .gitignore

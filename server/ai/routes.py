@@ -3,6 +3,7 @@ import os
 from google import genai
 from google.genai import types
 from server.auth.utils import token_required
+from server.ai.utils import get_system_prompt
 
 ai_bp = Blueprint('ai_bp', __name__, url_prefix='/api/ai')
 
@@ -12,6 +13,8 @@ if gemini_api_key:
 else:
     client = None
     print("Warning: GEMINI_API_KEY not set in environment variables")
+
+
 
 @ai_bp.route('/generate', methods=['POST'])
 @token_required
@@ -27,17 +30,25 @@ def generate_response():
     
     try:
         model = "gemini-2.0-flash"
-        contents = [
-            types.Content(
-                role="user",
-                parts=[
-                    types.Part.from_text(text=prompt),
-                ],
-            ),
-        ]
+        system_prompt = get_system_prompt()
+        
+        content = types.Content(
+            parts=[{"text": prompt}],
+            role="user"
+        )
+        
+        generation_config = types.GenerateContentConfig(
+            max_output_tokens=1024,
+            temperature=0.7,
+        )
+        
+        if system_prompt:
+            generation_config.system_instruction = system_prompt
+        
         response = client.models.generate_content(
             model=model,
-            contents=contents,
+            contents=content,
+            config=generation_config
         )
         
         return jsonify({
