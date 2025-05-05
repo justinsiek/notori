@@ -83,7 +83,7 @@ const DocCard = ({ document, onDelete }: DocCardProps) => {
       className='bg-white h-[240px] w-[210px] shadow-sm flex flex-col overflow-hidden cursor-pointer hover:shadow-md'
       onClick={handleCardClick}
     >
-      <div className='flex-1 p-4 border-b text-xs text-gray-600 overflow-hidden'>
+      <div className='flex-1 p-4 border-b text-xs border-gray-300 text-gray-600 overflow-hidden'>
         <div className='text-[10px] font-normal'>
           {document.preview}
         </div>

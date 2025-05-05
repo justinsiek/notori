@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { ArrowUp } from 'lucide-react'
+import MessageList from './MessageList'
 
 interface Message {
   content: string;
@@ -8,7 +9,7 @@ interface Message {
 
 const Sidebar = () => {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([{content: 'Hello, how can I help you today?', isUser: false}]);
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -57,26 +58,9 @@ const Sidebar = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-4 bg-white
-        [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent 
-        [&::-webkit-scrollbar-thumb]:bg-gray-100
-        hover:[&::-webkit-scrollbar-thumb]:bg-gray-200">
-        {messages.map((message, index) => (
-          <div 
-            key={index} 
-            className={`mb-2 p-2 rounded-md text-xs w-full break-words whitespace-pre-wrap overflow-wrap-anywhere ${
-              message.isUser ? 'bg-white border border-gray-200' : ''
-            }`}
-          >
-            {message.content}
-          </div>
-        ))}
-        {isLoading && (
-          <div className="text-gray-500 text-xs">Typing...</div>
-        )}
-      </div>
+      <MessageList messages={messages} isLoading={isLoading} />
       
-      <div className="px-4 pb-4 bg-white">
+      <div className="p-4 bg-white border-t border-gray-300">
         <div className="flex items-center">
           <textarea
             ref={textareaRef}
