@@ -2,6 +2,7 @@ from server.config import create_app
 from server.auth.routes import auth_bp
 from server.user.routes import user_bp
 from server.documents.routes import documents_bp
+from server.ai.routes import ai_bp
 import os
 
 app = create_app()
@@ -10,6 +11,7 @@ app = create_app()
 app.register_blueprint(auth_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(documents_bp)
+app.register_blueprint(ai_bp)
 
 @app.route('/')
 def index():
