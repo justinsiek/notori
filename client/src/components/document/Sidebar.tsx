@@ -37,7 +37,8 @@ const Sidebar = ({ documentContent, documentId }: SidebarProps) => {
         body: JSON.stringify({ 
           prompt: userInput,
           documentContent: documentContent,
-          documentId: documentId
+          documentId: documentId,
+          conversationHistory: messages
         }),
       });
       

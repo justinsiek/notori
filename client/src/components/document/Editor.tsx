@@ -61,13 +61,13 @@ const Editor = ({ sidebarOpen, initialContent, onSave, documentId, onEditStart }
 
   return (
     <div className="flex w-full h-full overflow-hidden">
-      <div className={`${sidebarOpen ? 'w-3/4' : 'w-full'} flex flex-col items-center overflow-auto py-12 px-4 
+      <div className={`${sidebarOpen ? 'w-2/3' : 'w-full'} flex flex-col items-center overflow-auto py-12 px-4 
       [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent 
       [&::-webkit-scrollbar-thumb]:bg-gray-100
       hover:[&::-webkit-scrollbar-thumb]:bg-gray-200`}>
         <div className="w-[210mm] min-h-[297mm] bg-white shadow-md mb-8 flex flex-col">
           <textarea
-            className="w-full h-full p-16 outline-none resize-none text-sm"
+            className="w-full h-full p-16 outline-none text-sm"
             value={content}
             onChange={handleContentChange}
           />
@@ -75,7 +75,7 @@ const Editor = ({ sidebarOpen, initialContent, onSave, documentId, onEditStart }
       </div>
       
       {sidebarOpen && (
-        <div className="w-1/4 border-l border-gray-200 overflow-auto
+        <div className="w-1/3 border-l border-gray-200 overflow-auto
         [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent 
         [&::-webkit-scrollbar-thumb]:bg-gray-200
         hover:[&::-webkit-scrollbar-thumb]:bg-gray-300">

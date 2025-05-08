@@ -21,6 +21,7 @@ def generate_response():
     prompt = data.get('prompt')
     document_content = data.get('documentContent', '')
     document_id = data.get('documentId', '')
+    conversation_history = data.get('conversationHistory', [])
 
     print("hello")
     
@@ -35,11 +36,17 @@ def generate_response():
         return jsonify({'error': 'Gemini API is not configured'}), 500
     
     try:
-        model = "gemini-2.0-flash"
+        model = "gemini-2.5-flash-preview-04-17"
         system_prompt = get_system_prompt()
         
-        # Combine the document content with the user's prompt
-        full_prompt = f"DOCUMENT CONTENT:\n\n{document_content}\n\nUSER REQUEST:\n{prompt}"
+        # Build conversation history string
+        history_str = ""
+        for msg in conversation_history:
+            role = "User" if msg.get('isUser') else "Assistant"
+            history_str += f"{role}: {msg.get('content')}\n"
+        
+        # Combine everything into the prompt
+        full_prompt = f"CONVERSATION HISTORY:\n{history_str}\n\nDOCUMENT CONTENT:\n\n{document_content}\n\nUSER REQUEST:\n{prompt}"
         
         content = types.Content(
             parts=[{"text": full_prompt}],

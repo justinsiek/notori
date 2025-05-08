@@ -107,7 +107,7 @@ export function Navbar({
           <div className="flex justify-center items-center">
             <input
               type="text"
-              className="text-lg font-medium text-gray-800 text-center outline-none bg-transparent max-w-[200px] sm:max-w-xs"
+              className="text-lg font-medium text-gray-800 text-center outline-none bg-transparent w-[500px]"
               value={title}
               onChange={handleTitleChange}
               onBlur={handleSave} 
