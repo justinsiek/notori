@@ -5,6 +5,8 @@ import MessageList from './MessageList'
 interface Message {
   content: string;
   isUser: boolean;
+  type?: 'text' | 'diff_suggestion';
+  suggestion_data?: any;
 }
 
 interface SidebarProps {
@@ -51,18 +53,30 @@ const Sidebar = ({ documentContent, documentId }: SidebarProps) => {
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
-    
-    setMessages(prev => [...prev, { content: input, isUser: true }]);
+
+    const newUserMessage: Message = { content: input, isUser: true, type: 'text' };
+    setMessages(prev => [...prev, newUserMessage]);
     setInput('');
     setIsLoading(true);
-    
+
     const result = await sendMessageToAPI(input);
-    
-    setMessages(prev => [...prev, { 
-      content: result.success ? result.data.response : `Error: ${result.error || 'Failed to reach server'}`, 
-      isUser: false 
-    }]);
-    
+
+    if (result.success && result.data.response && Array.isArray(result.data.response.segments)) {
+      const newAssistantMessages: Message[] = result.data.response.segments.map((segment: any) => ({
+        content: segment.type === 'text' ? segment.content : '',
+        isUser: false,
+        type: segment.type,
+        suggestion_data: segment.type === 'diff_suggestion' ? segment.suggestion_data : undefined,
+      }));
+      setMessages(prev => [...prev, ...newAssistantMessages]);
+    } else {
+      setMessages(prev => [...prev, {
+        content: `Error: ${result.error || 'Failed to process response or malformed data.'}`,
+        isUser: false,
+        type: 'text'
+      }]);
+    }
+
     setIsLoading(false);
   };
 

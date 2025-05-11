@@ -1,10 +1,20 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import DiffSuggestionCard from './DiffSuggestionCard'
 
 interface Message {
   content: string;
   isUser: boolean;
+  type?: 'text' | 'diff_suggestion';
+  suggestion_data?: {
+    id: string;
+    original_block: string;
+    suggested_block: string;
+    context_before?: string;
+    context_after?: string;
+    description: string;
+  };
 }
 
 interface MessageListProps {
@@ -21,12 +31,14 @@ const MessageList = ({ messages, isLoading }: MessageListProps) => {
       {messages.map((message, index) => (
         <div 
           key={index} 
-          className={`mb-2 p-2 rounded-md w-full ${
-            message.isUser ? 'bg-white border border-gray-200 whitespace-pre-wrap break-words text-sm' : ''
-          }`}
+          className={`mb-2 p-2 rounded-md w-full ${message.isUser ? 'bg-white border border-gray-200 whitespace-pre-wrap break-words text-sm' : ''
+            }${message.type === 'diff_suggestion' && !message.isUser ? ' bg-white border border-gray-200' : '' // White background for diff_suggestion card
+            }`}
         >
           {message.isUser ? (
-            message.content
+            message.content // User messages are always text
+          ) : message.type === 'diff_suggestion' && message.suggestion_data ? (
+            <DiffSuggestionCard suggestion_data={message.suggestion_data} />
           ) : (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]} 
